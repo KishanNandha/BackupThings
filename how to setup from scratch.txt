@@ -1,0 +1,40 @@
+
+1) Create jar file using mvn clean install 
+
+2) copy jar file to any folder
+
+3) unzip the jar file in the folder 
+
+4) find required modules for jar
+
+	(a) Delete log4j-api-2.13.3.jar form demo-mac-0.0.1-SNAPSHOT\BOOT-INF\lib\
+		it uses the module java.base so it wont create issue 
+
+	(b) jdeps --module-path demo-mac-0.0.1-SNAPSHOT\BOOT-INF\lib\  --list-deps demo-mac-0.0.1-SNAPSHOT.jar demo-mac-0.0.1-SNAPSHOT\BOOT-INF\lib\*
+	
+	(c) copy the output (used in jlink command)
+	
+5) Create java run time using modules from step 4
+
+	jlink --no-header-files --no-man-pages --add-modules java.base,java.desktop,java.instrument,java.logging,java.management,java.management.rmi,java.naming,java.prefs,java.rmi,java.scripting,java.security.jgss,java.sql,java.xml,jdk.httpserver,jdk.jfr,jdk.unsupported --output demo-mac-runtime
+	
+6) copy app jar(demo-mac-0.0.1-SNAPSHOT.jar) to demo-mac-runtime/bin
+
+
+7) Cd demo-mac-runtime/bin
+
+7) java.exe -jar demo-mac-0.0.1-SNAPSHOT.jar
+
+8) for creating service use : https://javadeveloperzone.com/spring-boot/spring-boot-as-windows-service/
+
+Extra steps for service: 
+		1)copy app jar to \demo-mac-runtime\bin
+		2) use following xml
+		  <service>
+		  <id>demo-mac</id>
+		  <name>demo-mac</name>
+		  <description>demo-mac - Spring boot as windows service example</description>
+		  <executable>"%BASE%\demo-mac-runtime\bin\java.exe"</executable>
+		  <arguments>-jar ""%BASE%\demo-mac-runtime\bin\demo-mac-0.0.1-SNAPSHOT.jar"</arguments>
+		  <logmode>rotate</logmode>
+		</service>
